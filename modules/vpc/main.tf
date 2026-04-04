@@ -1,25 +1,39 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
-  backend "s3" {
-    bucket         = "terraform-aws-infra-state-paschalko"
-    key            = "global/s3/terraform.tfstate"
-    region         = "eu-west-1"
-    dynamodb_table = "terraform-state-locks"
-    encrypt        = true
+  tags = {
+    Name        = "${var.environment}-vpc"
+    Environment = var.environment
   }
 }
 
-provider "aws" {
-  region = "eu-west-1"
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "eu-west-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "${var.environment}-public-subnet"
+  }
 }
 
-module "vpc" {
-  source      = "./modules/vpc"
-  environment = "dev"
+resource "aws_subnet" "private" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "eu-west-1b"
+
+  tags = {
+    Name = "${var.environment}-private-subnet"
+  }
+}
+
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.environment}-igw"
+  }
 }
