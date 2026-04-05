@@ -30,6 +30,17 @@ resource "aws_subnet" "private" {
   }
 }
 
+
+resource "aws_subnet" "private_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.3.0/24"
+  availability_zone = "eu-west-1c"
+
+  tags = {
+    Name = "${var.environment}-private-subnet-2"
+  }
+}
+
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -37,3 +48,4 @@ resource "aws_internet_gateway" "main" {
     Name = "${var.environment}-igw"
   }
 }
+

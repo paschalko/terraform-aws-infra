@@ -31,3 +31,13 @@ module "ec2" {
   public_subnet_id = module.vpc.public_subnet_id
   instance_type    = "t2.micro"
 }
+
+module "rds" {
+  source              = "./modules/rds"
+  environment         = "dev"
+  vpc_id              = module.vpc.vpc_id
+  private_subnet_id   = module.vpc.private_subnet_id
+  private_subnet_2_id = module.vpc.private_subnet_2_id
+  db_password         = "changeme123!"
+}
+
