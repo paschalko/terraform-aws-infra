@@ -16,5 +16,11 @@ variable "public_subnet_id" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
+}
+
+variable "ssh_allowed_cidr" {
+  description = "CIDR allowed to SSH (e.g. 203.0.113.10/32). Null disables SSH."
+  type        = string
+  default     = null
 }

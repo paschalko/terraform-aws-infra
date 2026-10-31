@@ -13,10 +13,9 @@ variable "private_subnet_id" {
   type        = string
 }
 
-variable "db_password" {
-  description = "Database password"
+variable "app_security_group_id" {
+  description = "Security group of the app server allowed to connect to the database"
   type        = string
-  sensitive   = true
 }
 
 variable "private_subnet_2_id" {

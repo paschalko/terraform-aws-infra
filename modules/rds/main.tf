@@ -13,11 +13,13 @@ resource "aws_security_group" "rds" {
   description = "Security group for RDS"
   vpc_id      = var.vpc_id
 
+  # Only the app server's security group can reach the database
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    description     = "PostgreSQL from the app server"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [var.app_security_group_id]
   }
 
   egress {
@@ -42,11 +44,15 @@ resource "aws_db_instance" "main" {
 
   db_name  = "appdb"
   username = "dbadmin"
-  password = var.db_password
+
+  # AWS generates the password and stores it in Secrets Manager,
+  # so it never appears in code or Terraform variables
+  manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
+  storage_encrypted   = true
   skip_final_snapshot = true
   publicly_accessible = false
 
